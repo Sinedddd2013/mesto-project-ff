@@ -29,8 +29,8 @@ const formElement = document.forms["edit-profile"];
 const formNewPlace = document.forms["new-place"];
 
 // Находим поля формы в DOM
-const nameInput = formElement.querySelector(".popup__input_type_name"); // Воспользуйтесь инструментом .querySelector()
-const jobInput = formElement.querySelector(".popup__input_type_description"); // Воспользуйтесь инструментом .querySelector()
+const nameInput = formElement.querySelector(".popup__input_type_name"); 
+const jobInput = formElement.querySelector(".popup__input_type_description"); 
 const profile__title = document.querySelector(".profile__title");
 const profile__description = document.querySelector(".profile__description");
 
@@ -54,5 +54,6 @@ addEventList(popupEdit);
 addEventList(popupNewCard);
 addEventList(popupImage);
 
+//вешаем слушатели на формы
 formElement.addEventListener("submit", handleFormSubmit);
 formNewPlace.addEventListener("submit", formNewPlaceSubmit);
