@@ -1,11 +1,5 @@
-import { openImage } from "./modal.js";
-
-const cardsPlace = document.querySelector(".places__list");
-const cardTemplate = document.querySelector("#card-template").content;
-const popupImage = document.querySelector(".popup_type_image");
-const page = document.querySelector(".page");
-
-export function createCard(cardData) {
+export function createCard(cardData, deleteCard, likeCard, openImagePopup) {
+  const cardTemplate = document.querySelector("#card-template").content;
   const cardItem = cardTemplate.querySelector(".card").cloneNode(true);
   const deleteButton = cardItem.querySelector(".card__delete-button");
   const likeButton = cardItem.querySelector(".card__like-button");
@@ -16,16 +10,16 @@ export function createCard(cardData) {
   cardImage.alt = cardData.name;
   cardTitle.textContent = cardData.name;
 
-  deleteButton.addEventListener("click", function () {
-    const cardToDel = deleteButton.closest(".card");
-    deleteCard(cardToDel);
-  });
-  likeButton.addEventListener("click", function () {
-    likeCard(likeButton);
+  cardImage.addEventListener("click", function () {
+    openImagePopup(cardData);
   });
 
-  cardImage.addEventListener("click", function () {
-    openImage(cardData.link, cardData.name);
+  deleteButton.addEventListener("click", function() {
+    deleteCard(cardItem);
+  });
+
+  likeButton.addEventListener("click", function () {
+    likeCard(likeButton);
   });
 
   return cardItem;
@@ -33,14 +27,6 @@ export function createCard(cardData) {
 
 export function deleteCard(cardToDel) {
   cardToDel.remove();
-}
-
-export function addCard(arr) {
-  if (Array.isArray(arr) && arr.length) {
-    arr.forEach((obj) => {
-      cardsPlace.prepend(createCard(obj));
-    });
-  }
 }
 
 export function likeCard(likeButton) {
