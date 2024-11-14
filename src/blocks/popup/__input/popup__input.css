@@ -27,3 +27,12 @@
   position: relative;
   top: -5px;
 }
+
+.form__input_type_error {
+  border-color: #ff0000;
+  
+}
+
+.form__input-error_active{
+  display: block;
+}
