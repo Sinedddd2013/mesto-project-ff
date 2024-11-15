@@ -24,19 +24,25 @@ const profileDescription = document.querySelector(".profile__description");
 const nameInput = formEditProfile.querySelector(".popup__input_type_name");
 const jobInput = formEditProfile.querySelector(".popup__input_type_description");
 
+const newPlaceNameInput = formNewPlace.querySelector('.popup__input_type_card-name');
+const newPlaceURLInput = formNewPlace.querySelector('.popup__input_type_url');
+
 const img = document.querySelector(".popup__image");
 const popupCaption = document.querySelector(".popup__caption");
-
 
 //слушатели открытия модалок
 editButton.addEventListener("click", function () {
   openModal(popupEdit);
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
+  clearValidation(formEditProfile);
 });
 
 addButton.addEventListener("click", function () {
   openModal(popupNewCard);
+  newPlaceNameInput.value = '';
+  newPlaceURLInput.value = '';
+  clearValidation(formNewPlace);
 });
 
 function addCard(arr) {
@@ -166,20 +172,44 @@ function setEventListeners(formElement) {
   });
 };
 
-function enableValidation() {
-  const formList = Array.from(document.querySelectorAll('.popup__form'));
+
+//todo выяснить зачем нужен этот объект, в чем преимущество его использования
+const enableValidationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: '.form__submit_inactive',
+  inputErrorClass: '.form__input_type_error',
+  errorClass: '.form__input-error'  
+}
+
+function enableValidation(enableValidationConfig) {
+  const formList = Array.from(document.querySelectorAll(`${enableValidationConfig.formSelector}`));
   formList.forEach((formElement) => {
     setEventListeners(formElement);
   });
 };
 
-enableValidation();
+function clearValidation(formElement) {
+  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
+  const spanErrorList = Array.from(formElement.querySelectorAll('.form__input-error'));
+  console.log(inputList);
+  inputList.forEach(function(input) {
+    input.classList.remove('form__input_type_error');
+  })
+  spanErrorList.forEach(function(spanError){
+    spanError.classList.remove('form__input-error_active');
+  })
+}
+
+enableValidation(enableValidationConfig);
 
 //запросы
 //Токен: a1e0c1a0-efb2-47a7-b652-82dc3cc11121
 // Идентификатор группы: wff-cohort-26@ya.ru
 
-const fetchCards = fetch('https://mesto.nomoreparties.co/v1/wff-cohort-26/cards', {
+function fetchCards() {
+return fetch('https://mesto.nomoreparties.co/v1/wff-cohort-26/cards', {
   headers: {
     authorization: 'a1e0c1a0-efb2-47a7-b652-82dc3cc11121'
   }
@@ -188,23 +218,28 @@ const fetchCards = fetch('https://mesto.nomoreparties.co/v1/wff-cohort-26/cards'
   .then((result) => {
     return result;
   });
+}
 
-const fetchUser = fetch('https://mesto.nomoreparties.co/v1/wff-cohort-26/users/me', {
-  headers: {
-    authorization: 'a1e0c1a0-efb2-47a7-b652-82dc3cc11121'
-  }
-})
-  .then(res => res.json())
-  .then((result) => {
-    return result;
-  });
+  function fetchUser() {
+  return fetch('https://mesto.nomoreparties.co/v1/wff-cohort-26/users/me', {
+    headers: {
+      authorization: 'a1e0c1a0-efb2-47a7-b652-82dc3cc11121'
+    }
+  })
+    .then(res => res.json())
+    .then((result) => {
+      return result;
+    });
+  } 
 
-Promise.all([fetchCards, fetchUser])
+Promise.all([fetchCards(), fetchUser()])
   .then((values) => {
     values[0].forEach((card) => {
       initialCards.push(card);
     });
     userId = values[1]._id;
     addCard(initialCards);
+    profileTitle.textContent = values[1].name;
+    profileDescription.textContent = values[1].about;
   });
 
