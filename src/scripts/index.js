@@ -4,9 +4,12 @@ import { openModal, closeModal, closeByEscKeyUp, addEventList } from './../compo
 import './../pages/index.css';
 // import {initialCards} from './cards.js';
 
-let userId = null;
+
 const cardsPlace = document.querySelector(".places__list");
+let userId = null;
 let initialCards = [];
+let cardsData = [];
+let userData = [];
 
 const editButton = document.querySelector(".profile__edit-button");
 const addButton = document.querySelector(".profile__add-button");
@@ -14,6 +17,7 @@ const addButton = document.querySelector(".profile__add-button");
 const popupEdit = document.querySelector(".popup_type_edit");
 const popupImage = document.querySelector(".popup_type_image");
 const popupNewCard = document.querySelector(".popup_type_new-card");
+const popupDeleteCard = document.querySelector('.popup__delete_card');
 
 // Находим форму и поля в DOM
 const formEditProfile = document.forms["edit-profile"];
@@ -95,15 +99,30 @@ function submitFormNewPlace(e) {
   const cardName = formNewPlace.querySelector(".popup__input_type_card-name");
   const cardURL = formNewPlace.querySelector(".popup__input_type_url");
 
+  fetch('https://nomoreparties.co/v1/wff-cohort-26/cards', {
+    method: 'POST',
+    headers: {
+      authorization: 'a1e0c1a0-efb2-47a7-b652-82dc3cc11121',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      name: cardName.value,
+      link: cardURL.value
+    })
+  });
+
   //массив из одного объекта, т.к. функция добавления карточек принимает массив
   const cardData = [
     {
       name: cardName.value,
       link: cardURL.value,
+      owner: {
+        _id: userId
+      }
     },
   ];
 
-  addCard(cardData);
+  addCard(cardData, userId, deleteCard, likeCard, openImagePopup);
 
   cardName.value = "";
   cardURL.value = "";
@@ -173,7 +192,7 @@ function setEventListeners(formElement) {
 };
 
 
-//todo выяснить зачем нужен этот объект, в чем преимущество его использования
+//todo: выяснить зачем нужен этот объект, в чем преимущество его использования
 const enableValidationConfig = {
   formSelector: '.popup__form',
   inputSelector: '.popup__input',
@@ -193,6 +212,7 @@ function enableValidation(enableValidationConfig) {
 function clearValidation(formElement) {
   const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
   const spanErrorList = Array.from(formElement.querySelectorAll('.form__input-error'));
+  const buttonElement = formElement.querySelector('.popup__button');
   console.log(inputList);
   inputList.forEach(function(input) {
     input.classList.remove('form__input_type_error');
@@ -200,6 +220,7 @@ function clearValidation(formElement) {
   spanErrorList.forEach(function(spanError){
     spanError.classList.remove('form__input-error_active');
   })
+  buttonElement.classList.add('form__submit_inactive');
 }
 
 enableValidation(enableValidationConfig);
@@ -234,12 +255,16 @@ return fetch('https://mesto.nomoreparties.co/v1/wff-cohort-26/cards', {
 
 Promise.all([fetchCards(), fetchUser()])
   .then((values) => {
-    values[0].forEach((card) => {
+    cardsData = values[0];
+    cardsData.forEach((card) => {
       initialCards.push(card);
     });
-    userId = values[1]._id;
+
+    userData = values[1];
+    userId = userData._id;
+
     addCard(initialCards);
-    profileTitle.textContent = values[1].name;
-    profileDescription.textContent = values[1].about;
+    profileTitle.textContent = userData.name;
+    profileDescription.textContent = userData.about;
   });
 

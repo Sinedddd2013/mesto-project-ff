@@ -5,10 +5,12 @@ export function createCard(cardData, ownerId, deleteCard, likeCard, openImagePop
   const likeButton = cardItem.querySelector(".card__like-button");
   const cardImage = cardItem.querySelector(".card__image");
   const cardTitle = cardItem.querySelector(".card__title");
+  const cardLikesCount = cardItem.querySelector(".card__likes_count");
 
   cardImage.src = cardData.link;
   cardImage.alt = cardData.name;
   cardTitle.textContent = cardData.name;
+  cardLikesCount.textContent = cardData.likes.length;
 
   cardImage.addEventListener("click", function () {
     openImagePopup(cardData);
@@ -19,7 +21,8 @@ export function createCard(cardData, ownerId, deleteCard, likeCard, openImagePop
   };
 
   deleteButton.addEventListener("click", function() {
-    deleteCard(cardItem);
+    deleteCard(cardData);
+    cardItem.remove();
   });
 
   likeButton.addEventListener("click", function () {
@@ -30,9 +33,21 @@ export function createCard(cardData, ownerId, deleteCard, likeCard, openImagePop
 }
 
 export function deleteCard(cardToDel) {
-  cardToDel.remove();
+    fetch(`https://mesto.nomoreparties.co/v1/wff-cohort-26/cards/${cardToDel._id}`, {
+      method: 'DELETE',
+      headers: {
+        authorization: 'a1e0c1a0-efb2-47a7-b652-82dc3cc11121',
+      },
+    });
+
 }
 
 export function likeCard(likeButton) {
   likeButton.classList.toggle("card__like-button_is-active");
+  fetch(`https://mesto.nomoreparties.co/v1/wff-cohort-26/cards/${cardToDel._id}`, {
+    method: 'PUT',
+    headers: {
+      authorization: 'a1e0c1a0-efb2-47a7-b652-82dc3cc11121',
+    },
+  });
 }
