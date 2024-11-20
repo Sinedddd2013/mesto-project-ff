@@ -1,4 +1,4 @@
-export function createCard(cardData, ownerId, deleteCard, likeCard, openImagePopup) {
+export function createCard(cardData, userId, deleteCard, openImagePopup, deleteLike, setLike) {
   const cardTemplate = document.querySelector("#card-template").content;
   const cardItem = cardTemplate.querySelector(".card").cloneNode(true);
   const deleteButton = cardItem.querySelector(".card__delete-button");
@@ -16,38 +16,38 @@ export function createCard(cardData, ownerId, deleteCard, likeCard, openImagePop
     openImagePopup(cardData);
   });
 
-  if (cardData.owner._id !== ownerId) {
+  if (cardData.owner._id !== userId) {
     deleteButton.remove();
   };
 
-  deleteButton.addEventListener("click", function() {
+  deleteButton.addEventListener("click", function () {
     deleteCard(cardData);
     cardItem.remove();
   });
 
+  const isLiked = cardData.likes.some((like) => like._id === userId);
+  if (isLiked) { likeButton.classList.add("card__like-button_is-active") };
+
   likeButton.addEventListener("click", function () {
-    likeCard(likeButton);
+    if (likeButton.classList.contains('card__like-button_is-active')) {
+      deleteLike(cardData._id)
+        .then((json) => {
+          likeButton.classList.remove("card__like-button_is-active");
+          cardLikesCount.textContent = json.likes.length;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      setLike(cardData._id)
+        .then((json) => {
+          likeButton.classList.add("card__like-button_is-active");
+          cardLikesCount.textContent = json.likes.length;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
   });
-
   return cardItem;
-}
-
-export function deleteCard(cardToDel) {
-    fetch(`https://mesto.nomoreparties.co/v1/wff-cohort-26/cards/${cardToDel._id}`, {
-      method: 'DELETE',
-      headers: {
-        authorization: 'a1e0c1a0-efb2-47a7-b652-82dc3cc11121',
-      },
-    });
-
-}
-
-export function likeCard(likeButton) {
-  likeButton.classList.toggle("card__like-button_is-active");
-  fetch(`https://mesto.nomoreparties.co/v1/wff-cohort-26/cards/${cardToDel._id}`, {
-    method: 'PUT',
-    headers: {
-      authorization: 'a1e0c1a0-efb2-47a7-b652-82dc3cc11121',
-    },
-  });
 }
