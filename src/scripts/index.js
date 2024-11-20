@@ -54,6 +54,7 @@ addButton.addEventListener("click", function () {
 addAvatarButton.addEventListener('click', function () {
   linkAvatarInput.value = "";
   openModal(popupAddAvatar);
+  clearValidation(formAddAvatar);
 })
 
 function addCard(arr) {
