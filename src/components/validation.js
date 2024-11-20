@@ -67,9 +67,9 @@ export function clearValidation(formElement) {
     const buttonElement = formElement.querySelector('.popup__button');
     inputList.forEach(function (input) {
         input.classList.remove('form__input_type_error');
-    })
+    });
     spanErrorList.forEach(function (spanError) {
         spanError.classList.remove('form__input-error_active');
-    })
+    });
     buttonElement.classList.add('form__submit_inactive');
 }
