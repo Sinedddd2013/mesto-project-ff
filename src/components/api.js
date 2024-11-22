@@ -1,3 +1,11 @@
+const config = {
+    baseUrl: 'https://mesto.nomoreparties.co/v1/wff-cohort-26/',
+    headers: {
+        authorization: 'a1e0c1a0-efb2-47a7-b652-82dc3cc11121',
+        ContentType: 'application/json'
+    }
+}
+
 export function checkResponse(res) {
     if (res.ok) {
         return res.json();
@@ -7,118 +15,114 @@ export function checkResponse(res) {
 };
 
 export function changeProfileInfo(name, job) {
-    return fetch('https://mesto.nomoreparties.co/v1/wff-cohort-26/users/me', {
+    return fetch(`${config.baseUrl}/users/me`, {
         method: 'PATCH',
         headers: {
-            authorization: 'a1e0c1a0-efb2-47a7-b652-82dc3cc11121',
-            'Content-Type': 'application/json'
+            authorization: `${config.headers.authorization}`,
+            'Content-Type': `${config.headers.ContentType}`
         },
         body: JSON.stringify({
             name: name,
             about: job
         })
-    });
+    })
+        .then((res) => {
+            return checkResponse(res);
+        })
 };
 
 export function addNewCard(cardName, cardURL) {
-    return fetch('https://nomoreparties.co/v1/wff-cohort-26/cards', {
+    return fetch(`${config.baseUrl}/cards`, {
         method: 'POST',
         headers: {
-            authorization: 'a1e0c1a0-efb2-47a7-b652-82dc3cc11121',
-            'Content-Type': 'application/json'
+            authorization: `${config.headers.authorization}`,
+            'Content-Type': `${config.headers.ContentType}`
         },
         body: JSON.stringify({
             name: cardName.value,
             link: cardURL.value
         })
     })
+        .then((res) => {
+            return checkResponse(res);
+        })
 };
 
 export function addAvatar(link) {
-    return fetch('https://mesto.nomoreparties.co/v1/wff-cohort-26/users/me/avatar', {
+    return fetch(`${config.baseUrl}/users/me/avatar`, {
         method: 'PATCH',
         headers: {
-            authorization: 'a1e0c1a0-efb2-47a7-b652-82dc3cc11121',
-            'Content-Type': 'application/json'
+            authorization: `${config.headers.authorization}`,
+            'Content-Type': `${config.headers.ContentType}`
         },
         body: JSON.stringify({
             avatar: link
         })
     })
+        .then((res) => {
+            return checkResponse(res);
+        })
 };
 
 export function getInitialCards() {
-    return fetch('https://mesto.nomoreparties.co/v1/wff-cohort-26/cards', {
+    return fetch(`${config.baseUrl}/cards`, {
         headers: {
-            authorization: 'a1e0c1a0-efb2-47a7-b652-82dc3cc11121'
+            authorization: `${config.headers.authorization}`,
+            'Content-Type': `${config.headers.ContentType}`
         }
     })
         .then((res) => {
             return checkResponse(res);
-        })
-        .then((res) => {
-            return res;
         })
 };
 
 export function getUserInfo() {
-    return fetch('https://mesto.nomoreparties.co/v1/wff-cohort-26/users/me', {
+    return fetch(`${config.baseUrl}/users/me`, {
         headers: {
-            authorization: 'a1e0c1a0-efb2-47a7-b652-82dc3cc11121'
+            authorization: `${config.headers.authorization}`,
+            'Content-Type': `${config.headers.ContentType}`
         }
     })
         .then((res) => {
             return checkResponse(res);
-        })
-        .then((res) => {
-            return res;
         })
 };
 
 export function deleteLike(cardDataID) {
-    return fetch(`https://mesto.nomoreparties.co/v1/wff-cohort-26/cards/likes/${cardDataID}`, {
+    return fetch(`${config.baseUrl}/cards/likes/${cardDataID}`, {
         method: 'DELETE',
         headers: {
-            authorization: 'a1e0c1a0-efb2-47a7-b652-82dc3cc11121',
-            'Content-Type': 'application/json'
+            authorization: `${config.headers.authorization}`,
+            'Content-Type': `${config.headers.ContentType}`
         }
     })
         .then((res) => {
             return checkResponse(res);
-        })
-        .then((res) => {
-            return res;
         })
 }
 
 export function setLike(cardDataID) {
-    return fetch(`https://mesto.nomoreparties.co/v1/wff-cohort-26/cards/likes/${cardDataID}`, {
+    return fetch(`${config.baseUrl}/cards/likes/${cardDataID}`, {
         method: 'PUT',
         headers: {
-            authorization: 'a1e0c1a0-efb2-47a7-b652-82dc3cc11121',
-            'Content-Type': 'application/json'
+            authorization: `${config.headers.authorization}`,
+            'Content-Type': `${config.headers.ContentType}`
         }
     })
         .then((res) => {
             return checkResponse(res);
         })
-        .then((res) => {
-            return res;
-        })
 }
 
 export function deleteCard(cardToDelId) {
-    fetch(`https://mesto.nomoreparties.co/v1/wff-cohort-26/cards/${cardToDelId._id}`, {
+    return fetch(`${config.baseUrl}/cards/${cardToDelId._id}`, {
         method: 'DELETE',
         headers: {
-            authorization: 'a1e0c1a0-efb2-47a7-b652-82dc3cc11121',
-            'Content-Type': 'application/json'
+            authorization: `${config.headers.authorization}`,
+            'Content-Type': `${config.headers.ContentType}`
         },
     })
         .then((res) => {
             return checkResponse(res);
         })
-        .then((res) => {
-            return res;
-        });
 }

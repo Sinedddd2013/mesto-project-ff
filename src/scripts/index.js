@@ -1,7 +1,7 @@
 import { createCard } from './../components/card.js';
 import { openModal, closeModal, addEventList } from './../components/modal.js';
-import { changeProfileInfo, addNewCard, checkResponse, addAvatar, getInitialCards, getUserInfo, deleteLike, setLike, deleteCard } from './../components/api.js';
-import { enableValidation, clearValidation } from './../components/validation.js';
+import { changeProfileInfo, addNewCard, addAvatar, getInitialCards, getUserInfo, deleteLike, setLike, deleteCard } from './../components/api.js';
+import { enableValidation, clearValidation, validationConfig } from './../components/validation.js';
 
 import './../pages/index.css';
 
@@ -9,11 +9,11 @@ const cardsPlace = document.querySelector(".places__list");
 let userId = null;
 let initialCards = [];
 
-const editButton = document.querySelector(".profile__edit-button");
-const addButton = document.querySelector(".profile__add-button");
+const editProfileButton = document.querySelector(".profile__edit-button");
+const addCardButton = document.querySelector(".profile__add-button");
 const addAvatarButton = document.querySelector(".profile__image");
 
-const popupEdit = document.querySelector(".popup_type_edit");
+const popupEditProfile = document.querySelector(".popup_type_edit");
 const popupImage = document.querySelector(".popup_type_image");
 const popupNewCard = document.querySelector(".popup_type_new-card");
 const popupAddAvatar = document.querySelector(".popup__add_avatar");
@@ -22,6 +22,9 @@ const popupAddAvatar = document.querySelector(".popup__add_avatar");
 const formEditProfile = document.forms["edit-profile"];
 const formNewPlace = document.forms["new-place"];
 const formAddAvatar = document.forms['add_avatar'];
+
+const cardNameInput = formNewPlace.querySelector(".popup__input_type_card-name");
+const cardURLInput = formNewPlace.querySelector(".popup__input_type_url");
 
 const profileTitle = document.querySelector(".profile__title");
 const profileDescription = document.querySelector(".profile__description");
@@ -33,28 +36,27 @@ const linkAvatarInput = formAddAvatar.querySelector(".popup__input");
 const newPlaceNameInput = formNewPlace.querySelector('.popup__input_type_card-name');
 const newPlaceURLInput = formNewPlace.querySelector('.popup__input_type_url');
 
-const img = document.querySelector(".popup__image");
-const popupCaption = document.querySelector(".popup__caption");
+const imgPopup = document.querySelector(".popup__image");
+const imgPopupCaption = document.querySelector(".popup__caption");
 
 //слушатели открытия модалок
-editButton.addEventListener("click", function () {
-  openModal(popupEdit);
+editProfileButton.addEventListener("click", function () {
+  openModal(popupEditProfile);
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
-  clearValidation(formEditProfile);
+  clearValidation(formEditProfile, validationConfig);
 });
 
-addButton.addEventListener("click", function () {
+addCardButton.addEventListener("click", function () {
   openModal(popupNewCard);
-  newPlaceNameInput.value = '';
-  newPlaceURLInput.value = '';
-  clearValidation(formNewPlace);
+  formNewPlace.reset();
+  clearValidation(formNewPlace, validationConfig);
 });
 
 addAvatarButton.addEventListener('click', function () {
-  linkAvatarInput.value = "";
+  formAddAvatar.reset();
   openModal(popupAddAvatar);
-  clearValidation(formAddAvatar);
+  clearValidation(formAddAvatar, validationConfig);
 })
 
 function addCard(arr) {
@@ -66,14 +68,14 @@ function addCard(arr) {
 }
 
 function openImagePopup(cardObj) {
-  img.src = cardObj.link;
-  img.alt = cardObj.name;
-  popupCaption.textContent = cardObj.name;
+  imgPopup.src = cardObj.link;
+  imgPopup.alt = cardObj.name;
+  imgPopupCaption.textContent = cardObj.name;
   openModal(popupImage);
 }
 
 //вешаем события для закрытия модалок.
-addEventList(popupEdit);
+addEventList(popupEditProfile);
 addEventList(popupNewCard);
 addEventList(popupImage);
 addEventList(popupAddAvatar);
@@ -89,46 +91,34 @@ function submitProfileForm(evt) {
 
   changeProfileInfo(name, job)
     .then((res) => {
-      return checkResponse(res);
-    })
-    .then((res) => {
       profileTitle.textContent = res.name;
       profileDescription.textContent = res.about;
+      loading(false, buttonElement);
+      closeModal(popupEditProfile);
     })
     .catch((err) => {
       console.log(err);
     })
-    .finally(() => {
-      loading(false, buttonElement);
-      closeModal(popupEdit);
-    });
 }
 
 function submitFormNewPlace(evt) {
   evt.preventDefault();
 
-  const cardName = formNewPlace.querySelector(".popup__input_type_card-name");
-  const cardURL = formNewPlace.querySelector(".popup__input_type_url");
   let cardData = [];
   const buttonElement = evt.target.querySelector(".popup__button");
 
   loading(true, buttonElement);
 
-  addNewCard(cardName, cardURL)
-    .then((res) => {
-      return checkResponse(res);
-    })
+  addNewCard(cardNameInput, cardURLInput)
     .then((res) => {
       cardData.push(res);
       addCard(cardData, userId, deleteCard, openImagePopup);
+      loading(false, buttonElement);
+      closeModal(popupNewCard);
     })
     .catch((err) => {
       console.log(err);
     })
-    .finally(() => {
-      loading(false, buttonElement);
-      closeModal(popupNewCard);
-    });
 }
 
 function submitformAddAvatar(evt) {
@@ -141,18 +131,13 @@ function submitformAddAvatar(evt) {
 
   addAvatar(link)
     .then((res) => {
-      return checkResponse(res);
-    })
-    .then((res) => {
       profileImage.style.backgroundImage = `url(${res.avatar})`;
+      loading(false, buttonElement);
+      closeModal(popupAddAvatar);
     })
     .catch((err) => {
       console.log(err);
     })
-    .finally(() => {
-      loading(false, buttonElement);
-      closeModal(popupAddAvatar);
-    });
 }
 
 formEditProfile.addEventListener("submit", submitProfileForm);
@@ -167,17 +152,7 @@ function loading(isLoading, buttonElement) {
   }
 }
 
-//todo: выяснить зачем нужен этот объект, в чем преимущество его использования
-const enableValidationConfig = {
-  formSelector: '.popup__form',
-  inputSelector: '.popup__input',
-  submitButtonSelector: '.popup__button',
-  inactiveButtonClass: '.form__submit_inactive',
-  inputErrorClass: '.form__input_type_error',
-  errorClass: '.form__input-error'
-}
-
-enableValidation(enableValidationConfig);
+enableValidation(validationConfig);
 
 Promise.all([getInitialCards(), getUserInfo()])
   .then(([cardsData, userData]) => {
