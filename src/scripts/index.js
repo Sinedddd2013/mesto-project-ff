@@ -1,9 +1,31 @@
-import { createCard } from './../components/card.js';
-import { openModal, closeModal, addEventList } from './../components/modal.js';
-import { changeProfileInfo, addNewCard, addAvatar, getInitialCards, getUserInfo, deleteLike, setLike, deleteCard } from './../components/api.js';
-import { enableValidation, clearValidation, validationConfig } from './../components/validation.js';
+import { createCard } from "./../components/card.js";
+import { openModal, closeModal, addEventList } from "./../components/modal.js";
+import {
+  changeProfileInfo,
+  addNewCard,
+  addAvatar,
+  getInitialCards,
+  getUserInfo,
+  deleteLike,
+  setLike,
+  deleteCard,
+} from "./../components/api.js";
+import {
+  enableValidation,
+  clearValidation,
+} from "./../components/validation.js";
 
-import './../pages/index.css';
+import "./../pages/index.css";
+
+const validationConfig = {
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inactiveButtonClass: "form__submit_inactive",
+  inputErrorClass: "form__input_type_error",
+  errorClass: "form__input-error",
+  errorClassActive: "form__input-error_active",
+};
 
 const cardsPlace = document.querySelector(".places__list");
 let userId = null;
@@ -21,20 +43,26 @@ const popupAddAvatar = document.querySelector(".popup__add_avatar");
 // Находим форму и поля в DOM
 const formEditProfile = document.forms["edit-profile"];
 const formNewPlace = document.forms["new-place"];
-const formAddAvatar = document.forms['add_avatar'];
+const formAddAvatar = document.forms["add_avatar"];
 
-const cardNameInput = formNewPlace.querySelector(".popup__input_type_card-name");
+const cardNameInput = formNewPlace.querySelector(
+  ".popup__input_type_card-name"
+);
 const cardURLInput = formNewPlace.querySelector(".popup__input_type_url");
 
 const profileTitle = document.querySelector(".profile__title");
 const profileDescription = document.querySelector(".profile__description");
 const profileImage = document.querySelector(".profile__image");
 const nameInput = formEditProfile.querySelector(".popup__input_type_name");
-const jobInput = formEditProfile.querySelector(".popup__input_type_description");
+const jobInput = formEditProfile.querySelector(
+  ".popup__input_type_description"
+);
 const linkAvatarInput = formAddAvatar.querySelector(".popup__input");
 
-const newPlaceNameInput = formNewPlace.querySelector('.popup__input_type_card-name');
-const newPlaceURLInput = formNewPlace.querySelector('.popup__input_type_url');
+const newPlaceNameInput = formNewPlace.querySelector(
+  ".popup__input_type_card-name"
+);
+const newPlaceURLInput = formNewPlace.querySelector(".popup__input_type_url");
 
 const imgPopup = document.querySelector(".popup__image");
 const imgPopupCaption = document.querySelector(".popup__caption");
@@ -53,16 +81,18 @@ addCardButton.addEventListener("click", function () {
   clearValidation(formNewPlace, validationConfig);
 });
 
-addAvatarButton.addEventListener('click', function () {
+addAvatarButton.addEventListener("click", function () {
   formAddAvatar.reset();
   openModal(popupAddAvatar);
   clearValidation(formAddAvatar, validationConfig);
-})
+});
 
 function addCard(arr) {
   if (Array.isArray(arr) && arr.length) {
     arr.forEach((obj) => {
-      cardsPlace.prepend(createCard(obj, userId, deleteCard, openImagePopup, deleteLike, setLike));
+      cardsPlace.prepend(
+        createCard(obj, userId, deleteCard, openImagePopup, deleteLike, setLike)
+      );
     });
   }
 }
@@ -93,12 +123,14 @@ function submitProfileForm(evt) {
     .then((res) => {
       profileTitle.textContent = res.name;
       profileDescription.textContent = res.about;
-      loading(false, buttonElement);
       closeModal(popupEditProfile);
     })
     .catch((err) => {
       console.log(err);
     })
+    .finally(() => {
+      loading(false, buttonElement);
+    });
 }
 
 function submitFormNewPlace(evt) {
@@ -119,6 +151,9 @@ function submitFormNewPlace(evt) {
     .catch((err) => {
       console.log(err);
     })
+    .finally(() => {
+      loading(false, buttonElement);
+    });
 }
 
 function submitformAddAvatar(evt) {
@@ -138,6 +173,9 @@ function submitformAddAvatar(evt) {
     .catch((err) => {
       console.log(err);
     })
+    .finally(() => {
+      loading(false, buttonElement);
+    });
 }
 
 formEditProfile.addEventListener("submit", submitProfileForm);
@@ -170,4 +208,3 @@ Promise.all([getInitialCards(), getUserInfo()])
   .catch((err) => {
     console.log(err);
   });
-

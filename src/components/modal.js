@@ -7,7 +7,7 @@ export function closeModal(modal) {
   modal.classList.remove("popup_is-opened");
   document.removeEventListener("keyup", closeByEscKeyUp);
 }
-  
+
 //закрытие по кнопке ESC
 export function closeByEscKeyUp(e) {
   if (e.key === "Escape") {

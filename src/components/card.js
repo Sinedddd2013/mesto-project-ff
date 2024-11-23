@@ -1,4 +1,11 @@
-export function createCard(cardData, userId, deleteCard, openImagePopup, deleteLike, setLike) {
+export function createCard(
+  cardData,
+  userId,
+  deleteCard,
+  openImagePopup,
+  deleteLike,
+  setLike
+) {
   const cardTemplate = document.querySelector("#card-template").content;
   const cardItem = cardTemplate.querySelector(".card").cloneNode(true);
   const deleteButton = cardItem.querySelector(".card__delete-button");
@@ -18,7 +25,7 @@ export function createCard(cardData, userId, deleteCard, openImagePopup, deleteL
 
   if (cardData.owner._id !== userId) {
     deleteButton.remove();
-  };
+  }
 
   deleteButton.addEventListener("click", function () {
     deleteCard(cardData)
@@ -27,11 +34,13 @@ export function createCard(cardData, userId, deleteCard, openImagePopup, deleteL
       })
       .catch((err) => {
         console.log(err);
-      })
+      });
   });
 
   let isLiked = cardData.likes.some((like) => like._id === userId);
-  if (isLiked) { likeButton.classList.add("card__like-button_is-active") };
+  if (isLiked) {
+    likeButton.classList.add("card__like-button_is-active");
+  }
 
   likeButton.addEventListener("click", function () {
     if (isLiked) {
@@ -52,7 +61,7 @@ export function createCard(cardData, userId, deleteCard, openImagePopup, deleteL
         .catch((err) => {
           console.log(err);
         });
-    };
+    }
   });
 
   return cardItem;
@@ -61,4 +70,4 @@ export function createCard(cardData, userId, deleteCard, openImagePopup, deleteL
 function toggleLike(cardData, likeButton, cardLikesCount) {
   likeButton.classList.toggle("card__like-button_is-active");
   cardLikesCount.textContent = cardData.likes.length;
-} 
+}
